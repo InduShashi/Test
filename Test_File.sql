@@ -1,0 +1,35 @@
+create database EmployeeDetails;
+use EmployeeDetails;
+create table EmployeeData(E_no int,E_name varchar(20),E_Address varchar(20));
+insert into EmployeeData values(1,"Shashi","Hubli");
+insert into EmployeeData values(2,"Sudha","bihar");
+insert into EmployeeData values(3,"Sindhu","Dharwad");
+insert into EmployeeData values(4,"Sharadha","mysor");
+insert into EmployeeData values(5,"Sangeetha","udupi");
+set sql_safe_updates=1;
+set sql_safe_updates=0;
+delete FROM EmployeeData WHERE E_no = 5;
+select*from EmployeeData;
+use EmployeeDetails;
+create table EmployeeDepartment(E_no int,E_Departh varchar(20),E_name varchar(20));
+alter table EmployeeDepartment rename column E_name to E_Desi;
+insert into EmployeeDepartment values(1,"D1","HR");
+insert into EmployeeDepartment values(2,"D2","IT");
+insert into EmployeeDepartment values(3,"D3","MRKT");
+insert into EmployeeDepartment values(4,"D4","FINANCE");
+insert into EmployeeDepartment values(5,"D5","HR");
+SELECT*FROM EmployeeDepartment;
+select*from EmployeeData;
+insert into EmployeeDepartment values(6,"D6","HR");
+insert into EmployeeDepartment values(7,"D7","HR");
+
+select E_Desi from EmployeeDepartment group by E_Desi;
+select E_Desi,count(*) from EmployeeDepartment group by E_Desi;
+select E_Desi from EmployeeDepartment group by E_Desi;
+(select E_Desi, max( E_Departh) from EmployeeDepartment group by E_Desi);
+
+SELECT E_Address from EmployeeData;
+SELECT E_Address from EmployeeData where E_name="Sindhu";
+SELECT E_name from EmployeeData , EmployeeDepartment where EmployeeData.E_no = EmployeeDepartment.E_no;
+select E_name from EmployeeData where E_no = (select E_Desi from EmployeeDepartment where E_no =1);
+select E_Deptrtment from EmployeeDepartment where E_no in (select E_name="shashi" from EmployeeData);
