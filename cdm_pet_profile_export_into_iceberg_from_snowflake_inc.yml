@@ -1,0 +1,41 @@
+dag_name: cdm_pet_profile_export_from_snowflake_iceberg_inc
+dw_table_name: None
+owner: Shashikala
+
+components:
+  - name: snowflake
+    table_name: 'pet_profile'
+    connector: snowflake
+    path: iceberg/cdm/cdm_pet_profile_export_into_iceberg_inc2.sql
+    process_days: 108
+    interval_start_date : '2024-04-01 00:00:00.000'
+    interval_end_date : '2024-04-30 23:59:59.999'
+    dependencies: []
+
+  - name: spark
+    path: iceberg/cdm/cdm_pet_profile_export_from_snowflake_iceberg_inc.py
+    cluster: data_lake_pipeline-emr-cluster
+    connector: spark
+
+    args:
+      ["sudo", "spark-submit",
+                         "--deploy-mode", "cluster",
+                         "--master", "yarn",
+                         "--num-executors", "10",
+                         "--executor-memory", "5g",
+                         "--executor-cores", "4",
+                         "--driver-memory", "10g",
+                         "--conf", "spark.dynamicAllocation.enabled=true",
+                         "--conf", "spark.dynamicAllocation.shuffleTracking.enabled=true",
+                         "--conf", "spark.dynamicAllocation.maxExecutors=20",
+                         "--conf", "spark.yarn.submit.waitAppCompletion=true",
+                         "--conf", "spark.executorEnv.SPARK_HOME=/usr/lib/spark/",
+                         "--conf", "spark.yarn.jars=/usr/lib/spark/jars/*.jar",
+                         "s3://{env}-{aws_region_name}-data-lake-pipeline-repository/{path}",
+                         "--uuid" , "{uuid}",
+                         "--env", "{env}",
+                         "--aws-short-region", "{aws_region_name}",
+                         "--region-name", "{aws_region_full_name}"
+      ]
+    dependencies: [snowflake]
+    ensure_logs: true
